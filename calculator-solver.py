@@ -113,18 +113,18 @@ class Num(Button):
 
 
 class Convert(Button):
-    def __init__(self, pattern, to):
-        self._pattern = str(pattern)
+    def __init__(self, value, to):
+        self._value = str(value)
         self._to = str(to)
 
     def press(self, total, **kwargs):
-        if self._pattern not in str(total):
+        if self._value not in str(total):
             raise CalcError('pattern not found')
 
-        return int(str(total).replace(self._pattern, self._to))
+        return int(str(total).replace(self._value, self._to))
 
     def __str__(self):
-        return '{}=>{}'.format(self._pattern, self._to)
+        return '{}=>{}'.format(self._value, self._to)
 
 
 class Pow(Button):
@@ -262,6 +262,14 @@ class Sort(Button):
         return 'Sort{}'.format(self._desc and '<' or '>')
 
 
+class Cut(Convert):
+    def __init__(self, value):
+        super().__init__(value, '')
+
+    def __str__(self):
+        return 'Cut{}'.format(self._value)
+
+
 def do_portal(total, left, right):
     s = sign(total)
     total = abs(total)
@@ -365,6 +373,8 @@ def named_button(text):
             return Sort(False)
         elif text == 'sort<':
             return Sort(True)
+        elif text.startswith('cut'):
+            return Cut(text[3:])
         elif text.startswith('[+]'):
             return Change(int(text[3:]))
         elif text.startswith('+'):
