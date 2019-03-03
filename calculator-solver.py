@@ -247,6 +247,21 @@ class Inv10(Button):
         return 'Inv10'
 
 
+class Sort(Button):
+    def __init__(self, desc: bool):
+        self._desc = desc
+
+    def press(self, total, **kwargs):
+        t = sorted(str(abs(total)))
+        if self._desc:
+            t = reversed(t)
+
+        return sign(total) * int(''.join(t))
+
+    def __str__(self):
+        return 'Sort{}'.format(self._desc and '<' or '>')
+
+
 def do_portal(total, left, right):
     s = sign(total)
     total = abs(total)
@@ -343,6 +358,10 @@ def named_button(text):
             return Store()
         elif text == 'inv10':
             return Inv10()
+        elif text == 'sort>':
+            return Sort(False)
+        elif text == 'sort<':
+            return Sort(True)
         elif text.startswith('[+]'):
             return Change(int(text[3:]))
         elif text.startswith('+'):
@@ -360,6 +379,8 @@ def named_button(text):
         elif '=>' in text:
             pattern, to = text.split('=>', 1)
             return Convert(pattern, to)
+    except argparse.ArgumentTypeError:
+        raise
     except Exception as e:
         raise argparse.ArgumentTypeError('invalid button {}: {}'.format(text, e))
 
