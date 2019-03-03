@@ -299,11 +299,14 @@ def solve(total, goal, moves, buttons, portals=None):
                 new_total = button.press(total=total, buttons=buttons)
                 if new_total > 999999 or new_total < -999999:
                     raise CalcError('overflow')
+
+                if portals:
+                    new_total = do_portal(new_total, *portals)
+
+                if not isinstance(button, Change) and new_total == total:
+                    raise CalcError('redundant step')
             except CalcError:
                 continue
-
-            if portals:
-                new_total = do_portal(new_total, *portals)
 
             # if new_total != goal:
             try:
