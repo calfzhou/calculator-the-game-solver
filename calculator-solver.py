@@ -139,6 +139,7 @@ class Pow(Button):
 
 
 class Flip(Button):
+class Sign(Button):
     def press(self, total, **kwargs):
         return -total
 
@@ -280,7 +281,7 @@ def do_portal(total, left, right):
         t = t[1:]
         t = str(int(t) + d * right)
 
-    return int(t) * s
+    return s * int(t)
 
 
 def solve(total, goal, moves, buttons, portals=None):
@@ -358,7 +359,7 @@ def named_button(text):
         elif text == '>':
             return ShiftRight()
         elif text == '+/-':
-            return Flip()
+            return Sign()
         elif text == 'reverse':
             return Reverse()
         elif text == 'sum':
