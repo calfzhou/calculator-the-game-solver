@@ -306,6 +306,7 @@ def iter_buttons(total, buttons):
 
 def solve(total, goal, moves, buttons, portals=None):
     if total == goal:
+        print(total)
         return
 
     if moves <= 0:
@@ -423,21 +424,38 @@ def named_button(text):
     raise argparse.ArgumentTypeError('unknown button {}'.format(text))
 
 
+def translate_password(word):
+    return int(''.join(map(lambda c: str((ord(c.lower()) - ord('a')) // 3 + 1), word)))
+
+
 def main():
     parser = argparse.ArgumentParser(description='Calculator: The Game - Puzzle Solver')
-    parser.add_argument('-g', '--goals', '--goal', type=int, nargs='+', required=True,
-                        help='the goal number(s)')
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-g', '--goals', type=int, nargs='+', metavar='GOAL',
+                       help='the goal number(s)')
+    group.add_argument('-w', '--words', nargs='+', metavar='WORD',
+                       help='the goal password(s)')
+
     parser.add_argument('-m', '--moves', type=int, required=True,
                         help='the number of moves can make')
     parser.add_argument('-t', '--total', type=int, default=0,
                         help='the initial total number')
-    parser.add_argument('-b', '--buttons', '--button', type=named_button, nargs='+', required=True,
+    parser.add_argument('-b', '--buttons', type=named_button, nargs='+', metavar='BUTTON', required=True,
                         help='the buttons')
-    parser.add_argument('-p', '--portals', type=int, nargs=2,
-                        help='portal range LEFT, RIGHT (zero based)')
+    parser.add_argument('-p', '--portals', type=int, nargs=2, metavar=('LEFT', 'RIGHT'),
+                        help='portal range (zero based)')
 
     args = parser.parse_args()
     print(args)
+
+    if args.words:
+        args.goals = []
+        for word in args.words:
+            goal = translate_password(word)
+            print('translate password', word, 'to numeric goal:', goal)
+            args.goals.append(goal)
+
+    print()
 
     for goal in args.goals:
         print('goal:', goal)
