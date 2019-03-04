@@ -341,6 +341,15 @@ class DigitSub(DigitAdd):
         return 'digit{}'.format(self._value)
 
 
+class Shift(Button):
+    def press(self, total, pos, **kwargs):
+        t = str(abs(total))
+        return sign(total) * int(t[pos:] + t[:pos])
+
+    def __str__(self):
+        return 'Shift'
+
+
 def do_portal(total, left, right):
     s = sign(total)
     total = abs(total)
@@ -362,7 +371,7 @@ def iter_buttons(total, buttons):
         elif isinstance(button, Insert):
             for pos in range(len(str(abs(total))) + 1):
                 yield button, { 'pos': pos }
-        elif isinstance(button, Round):
+        elif isinstance(button, (Round, Shift)):
             for pos in range(1, len(str(abs(total)))):
                 yield button, { 'pos': pos }
         else:
@@ -464,6 +473,8 @@ def named_button(text):
             return Delete()
         elif text == 'round':
             return Round()
+        elif text == 'shift':
+            return Shift()
         elif text.startswith('insert'):
             return Insert(int(text[6:]))
         elif text.startswith('digit+'):
