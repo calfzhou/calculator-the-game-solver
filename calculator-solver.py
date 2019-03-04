@@ -316,6 +316,31 @@ class Round(Button):
         return 'ROUND'
 
 
+class DigitAdd(Button):
+    def __init__(self, value):
+        self._value = value
+
+    def press(self, total, pos, **kwargs):
+        t = list(str(total))
+        digit = int(t[-pos - 1])
+        if digit == 0:
+            digit = 10
+        digit = abs(digit + self._value) % 10
+        t[-pos - 1] = str(digit)
+        return int(''.join(t))
+
+    def __str__(self):
+        return 'digit+{}'.format(self._value)
+
+
+class DigitSub(DigitAdd):
+    def __init__(self, value):
+        super().__init__(-value)
+
+    def __str__(self):
+        return 'digit{}'.format(self._value)
+
+
 def do_portal(total, left, right):
     s = sign(total)
     total = abs(total)
@@ -331,7 +356,7 @@ def do_portal(total, left, right):
 
 def iter_buttons(total, buttons):
     for button in buttons:
-        if isinstance(button, Delete):
+        if isinstance(button, (Delete, DigitAdd, DigitSub)):
             for pos in range(len(str(abs(total)))):
                 yield button, { 'pos': pos }
         elif isinstance(button, Insert):
@@ -441,6 +466,10 @@ def named_button(text):
             return Round()
         elif text.startswith('insert'):
             return Insert(int(text[6:]))
+        elif text.startswith('digit+'):
+            return DigitAdd(int(text[6:]))
+        elif text.startswith('digit-'):
+            return DigitSub(int(text[6:]))
         elif text.startswith('cut'):
             return Cut(text[3:])
         elif text.startswith('[+]'):
