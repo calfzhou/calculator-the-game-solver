@@ -299,6 +299,23 @@ class Insert(Button):
         return 'INSERT{}'.format(self._value)
 
 
+class Round(Button):
+    def press(self, total, pos, **kwargs):
+        s = sign(total)
+        total = abs(total)
+        base = 10 ** pos
+        # NOTE: Python's round is not suitable for this button.
+        # total = round(total / base) * base
+        left, right = divmod(total, base)
+        if right >= (base >> 1):
+            left += 1
+        total = left * base
+        return s * total
+
+    def __str__(self):
+        return 'ROUND'
+
+
 def do_portal(total, left, right):
     s = sign(total)
     total = abs(total)
@@ -319,6 +336,9 @@ def iter_buttons(total, buttons):
                 yield button, { 'pos': pos }
         elif isinstance(button, Insert):
             for pos in range(len(str(abs(total))) + 1):
+                yield button, { 'pos': pos }
+        elif isinstance(button, Round):
+            for pos in range(1, len(str(abs(total)))):
                 yield button, { 'pos': pos }
         else:
             yield button, {}
@@ -417,6 +437,8 @@ def named_button(text):
             return Sort(True)
         elif text == 'delete':
             return Delete()
+        elif text == 'round':
+            return Round()
         elif text.startswith('insert'):
             return Insert(int(text[6:]))
         elif text.startswith('cut'):
