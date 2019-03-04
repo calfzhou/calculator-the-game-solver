@@ -452,11 +452,8 @@ def translate_password(word):
 
 def main():
     parser = argparse.ArgumentParser(description='Calculator: The Game - Puzzle Solver')
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('-g', '--goals', type=int, nargs='+', metavar='GOAL',
-                       help='the goal number(s)')
-    group.add_argument('-w', '--words', nargs='+', metavar='WORD',
-                       help='the goal password(s)')
+    parser.add_argument('-g', '--goals', nargs='+', metavar='GOAL',
+                        help='the goal number(s) or password(s)')
 
     parser.add_argument('-m', '--moves', type=int, required=True,
                         help='the number of moves can make')
@@ -470,17 +467,14 @@ def main():
     args = parser.parse_args()
     print(args)
 
-    if args.words:
-        args.goals = []
-        for word in args.words:
+    for word in args.goals:
+        if word.isdigit():
+            goal = int(word)
+            print('goal:', goal)
+        else:
             goal = translate_password(word)
-            print('translate password', word, 'to numeric goal:', goal)
-            args.goals.append(goal)
+            print('goal:', word, '=>', goal)
 
-    print()
-
-    for goal in args.goals:
-        print('goal:', goal)
         try:
             solve(args.total, goal, args.moves, args.buttons, portals=args.portals)
         except FailedError:
