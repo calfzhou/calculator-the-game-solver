@@ -282,6 +282,23 @@ class Delete(Button):
         return 'DELETE'
 
 
+class Insert(Button):
+    def __init__(self, value):
+        self._value = value
+
+    def press(self, total, pos, **kwargs):
+        s = sign(total)
+        total = abs(total)
+        base = 10 ** pos
+        base_mid = 10 ** len(str(self._value))
+        left, right = divmod(total, base)
+        total = left * base * base_mid + self._value * base + right
+        return s *total
+
+    def __str__(self):
+        return 'INSERT{}'.format(self._value)
+
+
 def do_portal(total, left, right):
     s = sign(total)
     total = abs(total)
@@ -299,6 +316,9 @@ def iter_buttons(total, buttons):
     for button in buttons:
         if isinstance(button, Delete):
             for pos in range(len(str(abs(total)))):
+                yield button, { 'pos': pos }
+        elif isinstance(button, Insert):
+            for pos in range(len(str(abs(total))) + 1):
                 yield button, { 'pos': pos }
         else:
             yield button, {}
@@ -397,6 +417,8 @@ def named_button(text):
             return Sort(True)
         elif text == 'delete':
             return Delete()
+        elif text.startswith('insert'):
+            return Insert(int(text[6:]))
         elif text.startswith('cut'):
             return Cut(text[3:])
         elif text.startswith('[+]'):
