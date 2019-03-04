@@ -90,7 +90,7 @@ class Div(Button):
         return '/{}'.format(self._value)
 
 
-class Del(Button):
+class Backspace(Button):
     def press(self, total, **kwargs):
         return total // 10
 
@@ -138,7 +138,6 @@ class Pow(Button):
         return '^{}'.format(self._value)
 
 
-class Flip(Button):
 class Sign(Button):
     def press(self, total, **kwargs):
         return -total
@@ -271,6 +270,18 @@ class Cut(Convert):
         return 'Cut{}'.format(self._value)
 
 
+class Delete(Button):
+    def press(self, total, pos, **kwargs):
+        s = sign(total)
+        total = abs(total)
+        base = 10 ** pos
+        total = total // base // 10 * base + total % base
+        return s * total
+
+    def __str__(self):
+        return 'DELETE'
+
+
 def do_portal(total, left, right):
     s = sign(total)
     total = abs(total)
@@ -282,6 +293,15 @@ def do_portal(total, left, right):
         t = str(int(t) + d * right)
 
     return s * int(t)
+
+
+def iter_buttons(total, buttons):
+    for button in buttons:
+        if isinstance(button, Delete):
+            for pos in range(len(str(abs(total)))):
+                yield button, { 'pos': pos }
+        else:
+            yield button, {}
 
 
 def solve(total, goal, moves, buttons, portals=None):
@@ -303,9 +323,9 @@ def solve(total, goal, moves, buttons, portals=None):
             else:
                 store.store(prev_value)
 
-        for button in buttons:
+        for button, params in iter_buttons(total, buttons):
             try:
-                new_total = button.press(total=total, buttons=buttons)
+                new_total = button.press(total=total, buttons=buttons, **params)
                 if new_total > 999999 or new_total < -999999:
                     raise CalcError('overflow')
 
@@ -320,7 +340,7 @@ def solve(total, goal, moves, buttons, portals=None):
             # if new_total != goal:
             try:
                 solve(new_total, goal, moves - 1, buttons, portals=portals)
-                print(total, button, '->', new_total)
+                print(total, str(button) + str(params or ''), '->', new_total)
                 # for store in stores:
                 #     if store.get_value() == total:
                 #         print('long press store({}) to {}'.format(prev_value, store))
@@ -353,7 +373,7 @@ def solve(total, goal, moves, buttons, portals=None):
 def named_button(text):
     try:
         if text == '<<':
-            return Del()
+            return Backspace()
         elif text == '<':
             return ShiftLeft()
         elif text == '>':
@@ -374,6 +394,8 @@ def named_button(text):
             return Sort(False)
         elif text == 'sort<':
             return Sort(True)
+        elif text == 'delete':
+            return Delete()
         elif text.startswith('cut'):
             return Cut(text[3:])
         elif text.startswith('[+]'):
