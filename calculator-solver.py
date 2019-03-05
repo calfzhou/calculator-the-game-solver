@@ -342,9 +342,61 @@ class DigitSub(DigitAdd):
 
 
 class Shift(Button):
-    def press(self, total, pos, **kwargs):
+    _shift_left = ShiftLeft()
+    _shift_right = ShiftRight()
+
+    # def press(self, total, pos, **kwargs):
+    #     t = str(abs(total))
+    #     return sign(total) * int(t[pos:] + t[:pos])
+
+    def press(self, total, actions, **kwargs):
+        for act in actions:
+            if act == '<':
+                total = self._shift_left.press(total)
+            elif act == '>':
+                total = self._shift_right.press(total)
+            elif act in ' ,;':
+                pass
+            else:
+                raise CalcError('unknown action', act)
+
+        return total
+
+    def iter_action_groups(self, total):
+        if -9 <= total <= 9:
+            return
+
         t = str(abs(total))
-        return sign(total) * int(t[pos:] + t[:pos])
+        zeros = [i for i, d in enumerate(t) if d == '0']
+        n = len(zeros)
+
+        for r in range(n + 1):
+            # Shift right to remove r '0's (counting start from right to left).
+            right_moves = r and (len(t) - zeros[-r])
+            for l in range(max(n - r, 1)):
+                # Continuous '0's will be removed together when shifting left.
+                if l < n and zeros[l] == zeros[l - 1] + 1:
+                    continue
+
+                # Shift left to remove l '0's (counting start from left to right).
+                left_moves = l and ((right_moves - r) + (zeros[l - 1] - l + 1))
+
+                # ('>' * offset + '<' * -offset) can recover the origin order.
+                offset = left_moves - (right_moves - r)
+
+                # Safe shifting bound without removing more '0's.
+                if r + l == n:
+                    left_bound = (len(t) - n) // 2 + offset
+                    right_bound = len(t) - n - left_bound - 1
+                else:
+                    left_bound = zeros[l] - l - 1
+                    right_bound = len(t) - zeros[-r - 1] - r - 1
+
+                for index in range(-left_bound, right_bound + 1):
+                    actions = '>' * right_moves + '<' * left_moves + '>' * (index + offset) + '<' * (-index - offset)
+                    if actions:
+                        actions = ' '.join(actions[i:i + 5] for i in range(0, len(actions), 5))
+                        yield actions
 
     def __str__(self):
         return 'Shift'
@@ -371,9 +423,12 @@ def iter_buttons(total, buttons):
         elif isinstance(button, Insert):
             for pos in range(len(str(abs(total))) + 1):
                 yield button, { 'pos': pos }
-        elif isinstance(button, (Round, Shift)):
+        elif isinstance(button, Round):
             for pos in range(1, len(str(abs(total)))):
                 yield button, { 'pos': pos }
+        elif isinstance(button, Shift):
+            for actions in button.iter_action_groups(total):
+                yield button, { 'actions': actions }
         else:
             yield button, {}
 
