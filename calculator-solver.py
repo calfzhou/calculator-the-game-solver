@@ -216,7 +216,7 @@ class Change(Button):
 
 
 class Store(Num):
-    def __init__(self, value=''):
+    def __init__(self, value=None):
         super().__init__(value)
 
     def store(self, total):
@@ -226,7 +226,7 @@ class Store(Num):
         return self._value
 
     def press(self, total, **kwargs):
-        if self._value == '':
+        if self._value is None:
             raise CalcError('store is empty')
         elif self._value < 0:
             raise CalcError('store is < 0')
@@ -234,7 +234,10 @@ class Store(Num):
         return super().press(total, **kwargs)
 
     def __str__(self):
-        return 'Store({})'.format(self._value)
+        if self._value is None:
+            return 'Store'
+        else:
+            return 'Store({})'.format(self._value)
 
 
 class Inv10(Button):
@@ -429,6 +432,38 @@ class Replace(Button):
         return '(blue)REPLACE{}'.format(self._value)
 
 
+class StoreV2(Button):
+    def __init__(self):
+        self._value = None
+        self._stack = [self._value]
+
+    def press(self, total, long_press=False, **kwargs):
+        if long_press:
+            if self._value == total:
+                raise CalcError('total already stored')
+
+            self._stack.append(self._value)
+            self._value = total
+            return total
+        else:
+            if self._value is None:
+                raise CalcError('store is empty')
+            elif self._value < 0:
+                raise CalcError('store is < 0')
+
+            return int('{}{}'.format(total, self._value))
+
+    def revert(self, long_press=False, **kwargs):
+        if long_press:
+            self._value = self._stack.pop()
+
+    def __str__(self):
+        if self._value is None:
+            return 'Store'
+        else:
+            return 'Store({})'.format(self._value)
+
+
 def do_portal(total, left, right):
     s = sign(total)
     total = abs(total)
@@ -456,6 +491,9 @@ def iter_buttons(total, buttons):
         elif isinstance(button, Shift):
             for actions in button.iter_action_groups(total):
                 yield button, { 'actions': actions }
+        elif isinstance(button, StoreV2):
+            yield button, { 'long_press': True }
+            yield button, {}
         else:
             yield button, {}
 
@@ -484,45 +522,39 @@ def solve(total: int, goal: int, moves: int, buttons, portals=None, **kwargs):
                 store.store(prev_value)
 
         for button, params in iter_buttons(total, buttons):
+            button_desc = str(button) + str(params or '')
             try:
                 new_total = button.press(total=total, buttons=buttons, **params)
+            except CalcError:
+                continue
+
+            try:
                 if new_total > 999999 or new_total < -999999:
                     raise CalcError('overflow')
 
                 if portals:
                     new_total = do_portal(new_total, *portals)
 
-                if not isinstance(button, Change) and new_total in known_totals:
+                if isinstance(button, Change):
+                    pass
+                elif isinstance(button, StoreV2) and params.get('long_press', False):
+                    pass
+                elif new_total in known_totals:
                     raise CalcError('redundant step')
-            except CalcError:
-                continue
 
-            # if new_total != goal:
-            try:
                 solve(new_total, goal, moves - 1, buttons, portals=portals, known_totals=known_totals)
-                print(total, str(button) + str(params or ''), '->', new_total)
-                # for store in stores:
-                #     if store.get_value() == total:
-                #         print('long press store({}) to {}'.format(prev_value, store))
+                print(total, button_desc, '->', new_total)
                 for store, prev_value in zip(stores, prev_values):
                     if store.get_value() == total:
                         print('long press {} to {}'.format(Store(prev_value), store))
                     store.store(prev_value)
                 return
+            except CalcError:
+                continue
             except FailedError:
-                # button.revert(buttons=buttons)
                 continue
             finally:
-                button.revert(buttons=buttons)
-                # for store, prev_value in zip(stores, prev_values):
-                #     store.store(prev_value)
-
-            # print(total, button, '->', new_total)
-            # button.revert(buttons=buttons)
-            # for store, prev_value in zip(stores, prev_values):
-            #     store.store(prev_value)
-
-            # return
+                button.revert(buttons=buttons, **params)
 
     known_totals.pop()
     for store, prev_value in zip(stores, prev_values):
@@ -549,6 +581,8 @@ def named_button(text):
             return Mirror()
         elif text == 'store':
             return Store()
+        elif text == 'storev2':
+            return StoreV2()
         elif text == 'inv10':
             return Inv10()
         elif text == 'sort>':
