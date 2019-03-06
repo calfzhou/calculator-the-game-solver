@@ -343,7 +343,7 @@ class DigitAdd(Button):
         self._value += value
 
     def __str__(self):
-        return 'digit+{}'.format(self._value)
+        return '(blue)digit+{}'.format(self._value)
 
 
 class DigitSub(DigitAdd):
@@ -351,7 +351,7 @@ class DigitSub(DigitAdd):
         super().__init__(-value)
 
     def __str__(self):
-        return 'digit{}'.format(self._value)
+        return '(blue)digit{}'.format(self._value)
 
 
 class Shift(Button):
@@ -416,6 +416,19 @@ class Shift(Button):
         return 'Shift'
 
 
+class Replace(Button):
+    def __init__(self, value):
+        self._value = value
+
+    def press(self, total, pos, **kwargs):
+        t = list(str(total))
+        t[-pos - 1] = str(self._value)
+        return int(''.join(t))
+
+    def __str__(self):
+        return '(blue)REPLACE{}'.format(self._value)
+
+
 def do_portal(total, left, right):
     s = sign(total)
     total = abs(total)
@@ -431,7 +444,7 @@ def do_portal(total, left, right):
 
 def iter_buttons(total, buttons):
     for button in buttons:
-        if isinstance(button, (Delete, DigitAdd, DigitSub)):
+        if isinstance(button, (Delete, DigitAdd, DigitSub, Replace)):
             for pos in range(len(str(abs(total)))):
                 yield button, { 'pos': pos }
         elif isinstance(button, Insert):
@@ -548,12 +561,20 @@ def named_button(text):
             return Round()
         elif text == 'shift':
             return Shift()
+        elif text.startswith('replace'):
+            return Replace(int(text[7:]))
         elif text.startswith('insert'):
             return Insert(int(text[6:]))
         elif text.startswith('digit+'):
             return DigitAdd(int(text[6:]))
         elif text.startswith('digit-'):
             return DigitSub(int(text[6:]))
+        elif text.startswith('blue+'):
+            return DigitAdd(int(text[5:]))
+        elif text.startswith('blue-'):
+            return DigitSub(int(text[5:]))
+        elif text.startswith('blue'):
+            return Replace(int(text[4:]))
         elif text.startswith('cut'):
             return Cut(text[3:])
         elif text.startswith('[+]'):
