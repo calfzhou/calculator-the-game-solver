@@ -464,6 +464,34 @@ class StoreV2(Button):
             return 'Store({})'.format(self._value)
 
 
+class Lock(Button):
+    def __init__(self):
+        self._locks = []
+
+    def press(self, total, pos, **kwargs):
+        digit = str(abs(total))[-pos - 1]
+        self._locks.append((pos, digit))
+        return total
+
+    def revert(self, **kwargs):
+        self._locks.pop()
+
+    def lock(self, total):
+        if not self._locks:
+            return total
+
+        t = list(str(abs(total)))
+        for pos, digit in self._locks:
+            for _ in range(pos + 1 - len(t)):
+                t.insert(0, '0')
+            t[-pos - 1] = digit
+
+        return sign(total) * int(''.join(t))
+
+    def __str__(self):
+        return 'LOCK'
+
+
 def do_portal(total, left, right):
     s = sign(total)
     total = abs(total)
@@ -479,7 +507,7 @@ def do_portal(total, left, right):
 
 def iter_buttons(total, buttons):
     for button in buttons:
-        if isinstance(button, (Delete, DigitAdd, DigitSub, Replace)):
+        if isinstance(button, (Delete, DigitAdd, DigitSub, Replace, Lock)):
             for pos in range(len(str(abs(total)))):
                 yield button, { 'pos': pos }
         elif isinstance(button, Insert):
@@ -509,6 +537,7 @@ def solve(total: int, goal: int, moves: int, buttons, portals=None, **kwargs):
     known_totals: list = kwargs.setdefault('known_totals', [])
     known_totals.append(total)
 
+    locks = [b for b in buttons if isinstance(b, Lock)]
     stores = [b for b in buttons if isinstance(b, Store)]
     prev_values = [store.get_value() for store in stores]
     # Only store non-negative total
@@ -532,10 +561,13 @@ def solve(total: int, goal: int, moves: int, buttons, portals=None, **kwargs):
                 if new_total > 999999 or new_total < -999999:
                     raise CalcError('overflow')
 
+                for lock in locks:
+                    new_total = lock.lock(new_total)
+
                 if portals:
                     new_total = do_portal(new_total, *portals)
 
-                if isinstance(button, Change):
+                if isinstance(button, (Change, Lock)):
                     pass
                 elif isinstance(button, StoreV2) and params.get('long_press', False):
                     pass
@@ -595,6 +627,8 @@ def named_button(text):
             return Round()
         elif text == 'shift':
             return Shift()
+        elif text == 'lock':
+            return Lock()
         elif text.startswith('replace'):
             return Replace(int(text[7:]))
         elif text.startswith('insert'):
