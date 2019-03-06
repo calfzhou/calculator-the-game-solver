@@ -577,7 +577,7 @@ def translate_password(word):
 
 def main():
     parser = argparse.ArgumentParser(description='Calculator: The Game - Puzzle Solver')
-    parser.add_argument('-g', '--goals', nargs='+', metavar='GOAL',
+    parser.add_argument('-g', '--goals', nargs='+', metavar='GOAL', required=True,
                         help='the goal number(s) or password(s)')
 
     parser.add_argument('-m', '--moves', type=int, required=True,
