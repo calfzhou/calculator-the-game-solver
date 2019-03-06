@@ -93,7 +93,7 @@ class Div(Button):
 
 class Backspace(Button):
     def press(self, total, **kwargs):
-        return total // 10
+        return abs(total) // 10 * sign(total)
 
     def __str__(self):
         return '<<'
