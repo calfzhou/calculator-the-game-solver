@@ -446,8 +446,8 @@ def solve(total: int, goal: int, moves: int, buttons, portals=None, **kwargs):
     if moves <= 0:
         raise FailedError
 
-    known_totals: set = kwargs.setdefault('known_totals', set())
-    known_totals.add(total)
+    known_totals: list = kwargs.setdefault('known_totals', [])
+    known_totals.append(total)
 
     stores = [b for b in buttons if isinstance(b, Store)]
     prev_values = [store.get_value() for store in stores]
@@ -502,7 +502,7 @@ def solve(total: int, goal: int, moves: int, buttons, portals=None, **kwargs):
 
             # return
 
-    known_totals.remove(total)
+    known_totals.pop()
     for store, prev_value in zip(stores, prev_values):
         store.store(prev_value)
 
