@@ -433,13 +433,16 @@ def iter_buttons(total, buttons):
             yield button, {}
 
 
-def solve(total, goal, moves, buttons, portals=None):
+def solve(total: int, goal: int, moves: int, buttons, portals=None, **kwargs):
     if total == goal:
         print(total)
         return
 
     if moves <= 0:
         raise FailedError
+
+    known_totals: set = kwargs.setdefault('known_totals', set())
+    known_totals.add(total)
 
     stores = [b for b in buttons if isinstance(b, Store)]
     prev_values = [store.get_value() for store in stores]
@@ -462,14 +465,14 @@ def solve(total, goal, moves, buttons, portals=None):
                 if portals:
                     new_total = do_portal(new_total, *portals)
 
-                if not isinstance(button, Change) and new_total == total:
+                if not isinstance(button, Change) and new_total in known_totals:
                     raise CalcError('redundant step')
             except CalcError:
                 continue
 
             # if new_total != goal:
             try:
-                solve(new_total, goal, moves - 1, buttons, portals=portals)
+                solve(new_total, goal, moves - 1, buttons, portals=portals, known_totals=known_totals)
                 print(total, str(button) + str(params or ''), '->', new_total)
                 # for store in stores:
                 #     if store.get_value() == total:
@@ -494,6 +497,7 @@ def solve(total, goal, moves, buttons, portals=None):
 
             # return
 
+    known_totals.remove(total)
     for store, prev_value in zip(stores, prev_values):
         store.store(prev_value)
 
