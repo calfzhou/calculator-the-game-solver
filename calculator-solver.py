@@ -704,15 +704,17 @@ def main():
     print(args)
 
     for word in args.goals:
+        moves = args.moves
         if word.isdigit():
             goal = int(word)
             print('goal:', goal)
         else:
             goal = translate_password(word)
-            print('goal:', word, '=>', goal)
+            moves -= 1
+            print('goal:', word, '=>', goal, '(use 1 move)')
 
         try:
-            solve(args.total, goal, args.moves, args.buttons, portals=args.portals)
+            solve(args.total, goal, moves, args.buttons, portals=args.portals)
         except FailedError:
             print('no solution found!')
 
