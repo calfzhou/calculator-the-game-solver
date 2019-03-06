@@ -396,8 +396,9 @@ class Shift(Button):
                     left_bound = zeros[l] - l - 1
                     right_bound = len(t) - zeros[-r - 1] - r - 1
 
-                for index in range(-left_bound, right_bound + 1):
-                    actions = '>' * right_moves + '<' * left_moves + '>' * (index + offset) + '<' * (-index - offset)
+                shift_range = range(offset - left_bound, offset + right_bound + 1)
+                for shift_moves in sorted(shift_range, key=lambda x: abs(x)):
+                    actions = '>' * right_moves + '<' * left_moves + '>' * shift_moves + '<' * -shift_moves
                     if actions:
                         actions = ' '.join(actions[i:i + 5] for i in range(0, len(actions), 5))
                         yield actions
@@ -574,6 +575,14 @@ def named_button(text):
 def translate_password(word):
     return int(''.join(map(lambda c: str((ord(c.lower()) - ord('a')) // 3 + 1), word)))
 
+
+def _test_shift(total):
+    possibles = set([total])
+    shift = Shift()
+    for actions in shift.iter_action_groups(total):
+        res = shift.press(total, actions)
+        print(total, actions, res, res in possibles and 'duplicate' or '')
+        possibles.add(res)
 
 def main():
     parser = argparse.ArgumentParser(description='Calculator: The Game - Puzzle Solver')
