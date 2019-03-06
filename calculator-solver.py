@@ -465,28 +465,15 @@ class StoreV2(Button):
 
 
 class Lock(Button):
-    def __init__(self):
-        self._locks = []
-
-    def press(self, total, pos, **kwargs):
-        digit = str(abs(total))[-pos - 1]
-        self._locks.append((pos, digit))
+    def press(self, total, **kwargs):
         return total
 
-    def revert(self, **kwargs):
-        self._locks.pop()
+    def get_lock(self, total, pos, active_lock):
+        if active_lock:
+            raise CalcError('already locked')
 
-    def lock(self, total):
-        if not self._locks:
-            return total
-
-        t = list(str(abs(total)))
-        for pos, digit in self._locks:
-            for _ in range(pos + 1 - len(t)):
-                t.insert(0, '0')
-            t[-pos - 1] = digit
-
-        return sign(total) * int(''.join(t))
+        digit = str(abs(total))[-pos - 1]
+        return { 'pos': pos, 'digit': digit }
 
     def __str__(self):
         return 'LOCK'
@@ -503,6 +490,15 @@ def do_portal(total, left, right):
         t = str(int(t) + d * right)
 
     return s * int(t)
+
+
+def apply_lock(total, pos, digit):
+    t = list(str(abs(total)))
+    for _ in range(pos + 1 - len(t)):
+        t.insert(0, '0')
+    t[-pos - 1] = digit
+
+    return sign(total) * int(''.join(t))
 
 
 def iter_buttons(total, buttons):
@@ -537,7 +533,8 @@ def solve(total: int, goal: int, moves: int, buttons, portals=None, **kwargs):
     known_totals: list = kwargs.setdefault('known_totals', [])
     known_totals.append(total)
 
-    locks = [b for b in buttons if isinstance(b, Lock)]
+    active_lock = kwargs.get('lock')
+
     stores = [b for b in buttons if isinstance(b, Store)]
     prev_values = [store.get_value() for store in stores]
     # Only store non-negative total
@@ -552,7 +549,11 @@ def solve(total: int, goal: int, moves: int, buttons, portals=None, **kwargs):
 
         for button, params in iter_buttons(total, buttons):
             button_desc = str(button) + str(params or '')
+            new_lock = None
             try:
+                if isinstance(button, Lock):
+                    new_lock = button.get_lock(total, active_lock=active_lock, **params)
+
                 new_total = button.press(total=total, buttons=buttons, **params)
             except CalcError:
                 continue
@@ -561,8 +562,8 @@ def solve(total: int, goal: int, moves: int, buttons, portals=None, **kwargs):
                 if new_total > 999999 or new_total < -999999:
                     raise CalcError('overflow')
 
-                for lock in locks:
-                    new_total = lock.lock(new_total)
+                if active_lock:
+                    new_total = apply_lock(new_total, **active_lock)
 
                 if portals:
                     new_total = do_portal(new_total, *portals)
@@ -574,7 +575,8 @@ def solve(total: int, goal: int, moves: int, buttons, portals=None, **kwargs):
                 elif new_total in known_totals:
                     raise CalcError('redundant step')
 
-                solve(new_total, goal, moves - 1, buttons, portals=portals, known_totals=known_totals)
+                solve(new_total, goal, moves - 1, buttons,
+                      portals=portals, known_totals=known_totals, lock=new_lock)
                 print(total, button_desc, '->', new_total)
                 for store, prev_value in zip(stores, prev_values):
                     if store.get_value() == total:
