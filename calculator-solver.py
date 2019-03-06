@@ -121,7 +121,11 @@ class Convert(Button):
         if self._value not in str(total):
             raise CalcError('pattern not found')
 
-        return int(str(total).replace(self._value, self._to))
+        t = str(total).replace(self._value, self._to)
+        if t == '' or t == '-':
+            return 0
+        else:
+            return int(t)
 
     def __str__(self):
         return '{}=>{}'.format(self._value, self._to)
