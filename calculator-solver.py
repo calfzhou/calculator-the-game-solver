@@ -270,6 +270,9 @@ class Cut(Convert):
     def __init__(self, value):
         super().__init__(value, '')
 
+    def inc(self, value):
+        self._value = str(int(self._value) + value)
+
     def __str__(self):
         return 'Cut{}'.format(self._value)
 
@@ -298,6 +301,9 @@ class Insert(Button):
         left, right = divmod(total, base)
         total = left * base * base_mid + self._value * base + right
         return s *total
+
+    def inc(self, value):
+        self._value += value
 
     def __str__(self):
         return 'INSERT{}'.format(self._value)
@@ -332,6 +338,9 @@ class DigitAdd(Button):
         digit = abs(digit + self._value) % 10
         t[-pos - 1] = str(digit)
         return int(''.join(t))
+
+    def inc(self, value):
+        self._value += value
 
     def __str__(self):
         return 'digit+{}'.format(self._value)
