@@ -705,10 +705,10 @@ def main():
 
     for word in args.goals:
         moves = args.moves
-        if word.isdigit():
+        try:
             goal = int(word)
             print('goal:', goal)
-        else:
+        except ValueError:
             goal = translate_password(word)
             moves -= 1
             print('goal:', word, '=>', goal, '(use 1 move)')
