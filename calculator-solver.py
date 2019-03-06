@@ -17,7 +17,8 @@ def sign(value):
     elif value < 0:
         return -1
     else:
-        return 0
+        # NOTE: This is not standard, but it is useful.
+        return 1
 
 
 class Button:
@@ -303,7 +304,7 @@ class Insert(Button):
         base_mid = 10 ** len(str(self._value))
         left, right = divmod(total, base)
         total = left * base * base_mid + self._value * base + right
-        return s *total
+        return s * total
 
     def inc(self, value):
         self._value += value
@@ -683,6 +684,7 @@ def _test_shift(total):
         res = shift.press(total, actions)
         print(total, actions, res, res in possibles and 'duplicate' or '')
         possibles.add(res)
+
 
 def main():
     parser = argparse.ArgumentParser(description='Calculator: The Game - Puzzle Solver')
