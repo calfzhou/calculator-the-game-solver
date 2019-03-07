@@ -525,7 +525,6 @@ def iter_buttons(total, buttons):
 
 def solve(total: int, goal: int, moves: int, buttons, portals=None, **kwargs):
     if total == goal:
-        print(total)
         return
 
     if moves <= 0:
@@ -701,7 +700,7 @@ def main():
                         help='portal range (zero based)')
 
     args = parser.parse_args()
-    print(args)
+    # print(args)
 
     for word in args.goals:
         moves = args.moves
@@ -709,9 +708,11 @@ def main():
             goal = int(word)
             print('goal:', goal)
         except ValueError:
+            word = word.upper()
             goal = translate_password(word)
             moves -= 1
-            print('goal:', word, '=>', goal, '(use 1 move)')
+            print('goal:', word)
+            print(goal, 'ABC', '->', word)
 
         try:
             solve(args.total, goal, moves, args.buttons, portals=args.portals)
