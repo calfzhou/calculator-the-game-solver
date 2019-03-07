@@ -278,7 +278,7 @@ class Cut(Convert):
         self._value = str(int(self._value) + value)
 
     def __str__(self):
-        return 'Cut{}'.format(self._value)
+        return 'CUT{}'.format(self._value)
 
 
 class Delete(Button):
@@ -631,6 +631,10 @@ def named_button(text):
             return Shift()
         elif text == 'lock':
             return Lock()
+        elif text == '^2':
+            return Pow(2)
+        elif text == '^3':
+            return Pow(3)
         elif text.startswith('replace'):
             return Replace(int(text[7:]))
         elif text.startswith('insert'):
@@ -657,8 +661,6 @@ def named_button(text):
             return Mul(int(text[1:]))
         elif text.startswith('/'):
             return Div(int(text[1:]))
-        elif text.startswith('^'):
-            return Pow(int(text[1:]))
         elif text.isdigit():
             return Num(int(text))
         elif '=>' in text:
