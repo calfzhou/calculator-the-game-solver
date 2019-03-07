@@ -43,7 +43,6 @@ For more details, check [doc](./doc).
 ``` console
 $ ./calculator-solver.py -m 6 -g 3507 -t 3002 -b '3=>5' '>' 7 inv10 -p 4 0
 goal: 3507
-3507
 350 7 -> 3507
 750 Inv10 -> 350
 507 Shift> -> 750
@@ -61,13 +60,11 @@ So the solution move sequence is: `7`, `3=>5`, `7`, `Shift>`, `Inv10`, `7`.
 ``` console
 $ ./calculator-solver.py -m 3 -g 49 11 -t 54 -b /5 '>' lock
 goal: 49
-49
 45 /5 -> 49
 45 LOCK{'pos': 1} -> 45
 54 Shift> -> 45
 
 goal: 11
-11
 55 /5 -> 11
 54 Shift> -> 55
 54 LOCK{'pos': 1} -> 54
