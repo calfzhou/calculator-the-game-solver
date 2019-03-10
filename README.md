@@ -12,8 +12,8 @@ The algorithm is written in Python v3.7+.
 ## Command Line Usage
 
 ``` console
-$ ./calculator-solver.py -h
-usage: calculator-solver.py [-h] -g GOAL [GOAL ...] -m MOVES [-t TOTAL] -b
+$ ./calculator_solver.py -h
+usage: calculator_solver.py [-h] -g GOAL [GOAL ...] -m MOVES [-t TOTAL] -b
                             BUTTON [BUTTON ...] [-p LEFT RIGHT]
 
 Calculator: The Game - Puzzle Solver
@@ -41,7 +41,7 @@ For more details, check [doc](./doc).
 ![v1 Level 199](./doc/img/v1-level-199.jpeg)
 
 ``` console
-$ ./calculator-solver.py -m 6 -g 3507 -t 3002 -b '3=>5' '>' 7 inv10 -p 4 0
+$ ./calculator_solver.py -m 6 -g 3507 -t 3002 -b '3=>5' '>' 7 inv10 -p 4 0
 goal: 3507
 350 7 -> 3507
 750 Inv10 -> 350
@@ -58,7 +58,7 @@ So the solution move sequence is: `7`, `3=>5`, `7`, `Shift>`, `Inv10`, `7`.
 ![v2 Level 184](./doc/img/v2-level-184.jpeg)
 
 ``` console
-$ ./calculator-solver.py -m 3 -g 49 11 -t 54 -b /5 '>' lock
+$ ./calculator_solver.py -m 3 -g 49 11 -t 54 -b /5 '>' lock
 goal: 49
 45 /5 -> 49
 45 LOCK{'pos': 1} -> 45
