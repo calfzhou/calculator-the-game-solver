@@ -1,0 +1,400 @@
+- add_positive:
+  button: Add
+  init: 6
+  total: 29
+  result: 35
+
+- add_negative:
+  button: Add
+  init: 7
+  total: -22
+  result: -15
+
+- add_flip:
+  button: Add
+  init: 7
+  total: -2
+  result: 5
+
+- mul_positive:
+  button: Mul
+  init: 2
+  total: 72
+  result: 144
+
+- mul_zero:
+  button: Mul
+  init: 3
+  total: 0
+  result: 0
+
+- mul_negative:
+  button: Mul
+  init: 4
+  total: -5
+  result: -20
+
+- sub_positive:
+  button: Sub
+  init: 7
+  total: 103
+  result: 96
+
+- sub_flip:
+  button: Sub
+  init: 7
+  total: 2
+  result: -5
+
+- sub_negative:
+  button: Sub
+  init: 7
+  total: -18
+  result: -25
+
+- div_positive:
+  button: Div
+  init: 2
+  total: 28
+  result: 14
+
+- div_zero:
+  button: Div
+  init: 2
+  total: 0
+  result: 0
+
+- div_negative:
+  button: Div
+  init: 2
+  total: -14
+  result: -7
+
+- div_not_divisible:
+  button: Div
+  init: 2
+  total: 21
+
+- div_not_divisible_inf:
+  button: Div
+  init: 3
+  total: 22
+
+- backspace_positive:
+  button: Backspace
+  total: 123
+  result: 12
+
+- backspace_negative:
+  button: Backspace
+  total: -46
+  result: -4
+
+- backspace_positive_to_zero:
+  button: Backspace
+  total: 6
+  result: 0
+
+- backspace_negative_to_zero:
+  button: Backspace
+  total: -2
+  result: 0
+
+- backspace_zero:
+  button: Backspace
+  total: 0
+  result: 0
+
+- num_zero:
+  button: Num
+  init: 5
+  total: 0
+  result: 5
+
+- num_positive:
+  button: Num
+  init: 5
+  total: 28
+  result: 285
+
+- num_negative:
+  button: Num
+  init: 5
+  total: -17
+  result: -175
+
+- num_multi_digits:
+  button: Num
+  init: 12
+  total: 59
+  result: 5912
+
+- num_00:
+  button: Num
+  init: '00'
+  total: 25
+  result: 2500
+
+- convert_positive:
+  button: Convert
+  init:
+    - 35
+    - 12
+  total: 135
+  result: 112
+
+- convert_negative:
+  button: Convert
+  init:
+    - 35
+    - 12
+  total: -357
+  result: -127
+
+- convert_00:
+  button: Convert
+  init:
+    - 35
+    - '00'
+  total: 135
+  result: 100
+
+- convert_lead_zero:
+  button: Convert
+  init:
+    - 4
+    - 0
+  total: -41
+  result: -1
+
+- convert_multi:
+  button: Convert
+  init:
+    - 4
+    - 2
+  total: 144
+  result: 122
+
+- convert_left_to_right:
+  button: Convert
+  init:
+    - 33
+    - 12
+  total: 333
+  result: 123
+
+- square_positive:
+  button: Pow
+  init: 2
+  total: 3
+  result: 9
+
+- square_negative:
+  button: Pow
+  init: 2
+  total: -5
+  result: 25
+
+- square_zero:
+  button: Pow
+  init: 2
+  total: 0
+  result: 0
+
+- cube_positive:
+  button: Pow
+  init: 3
+  total: 2
+  result: 8
+
+- cube_negative:
+  button: Pow
+  init: 3
+  total: -3
+  result: -27
+
+- cube_zero:
+  button: Pow
+  init: 3
+  total: 0
+  result: 0
+
+- sign_positive:
+  button: Sign
+  total: 10
+  result: -10
+
+- sign_negative:
+  button: Sign
+  total: -28
+  result: 28
+
+- sign_zero:
+  button: Sign
+  total: 0
+  result: 0
+
+- reverse_positive:
+  button: Reverse
+  total: 123
+  result: 321
+
+- reverse_negative:
+  button: Reverse
+  total: -123
+  result: -321
+
+- reverse_zero:
+  button: Reverse
+  total: 0
+  result: 0
+
+- reverse_single:
+  button: Reverse
+  total: 6
+  result: 6
+
+- sum_positive:
+  button: Sum
+  total: 359
+  result: 17
+
+- sum_negative:
+  button: Sum
+  total: -359
+  result: -17
+
+- sum_zero:
+  button: Sum
+  total: 0
+  result: 0
+
+- shift_right_positive:
+  button: ShiftRight
+  total: 1234
+  result: 4123
+
+- shift_right_negative:
+  button: ShiftRight
+  total: -1234
+  result: -4123
+
+- shift_right_lead_zero:
+  button: ShiftRight
+  total: 120
+  result: 12
+
+- shift_left_positive:
+  button: ShiftLeft
+  total: 1234
+  result: 2341
+
+- shift_left_negative:
+  button: ShiftLeft
+  total: -1234
+  result: -2341
+
+- shift_left_lead_zero:
+  button: ShiftLeft
+  total: 1020
+  result: 201
+
+- mirror_positive:
+  button: Mirror
+  total: 123
+  result: 123321
+
+- mirror_negative:
+  button: Mirror
+  total: -12
+  result: -1221
+
+- mirror_zero:
+  button: Mirror
+  total: 0
+  result: 0
+
+- store_use:
+  button: Store
+  init: 12
+  total: 37
+  result: 3712
+
+- store_empty:
+  button: Store
+  total: 37
+
+- inv10_small:
+  button: Inv10
+  total: 12340
+  result: 98760
+
+- inv10_big:
+  button: Inv10
+  total: 56789
+  result: 54321
+
+- inv10_negative:
+  button: Inv10
+  total: -1085
+  result: -9025
+
+- sort_asc:
+  button: Sort
+  init: false
+  total: 6293
+  result: 2369
+
+- sort_desc:
+  button: Sort
+  init: true
+  total: 6293
+  result: 9632
+
+- sort_negative_asc:
+  button: Sort
+  init: false
+  total: -47241
+  result: -12447
+
+- sort_negative_desc:
+  button: Sort
+  init: true
+  total: -47241
+  result: -74421
+
+- sort_tail_zero:
+  button: Sort
+  init: true
+  total: 549038
+  result: 985430
+
+- sort_head_zero:
+  button: Sort
+  init: false
+  total: 549038
+  result: 34589
+
+- cut_positive:
+  button: Cut
+  init: 35
+  total: 135
+  result: 1
+
+- cut_negative:
+  button: Cut
+  init: 35
+  total: -357
+  result: -7
+
+- cut_multi:
+  button: Cut
+  init: 4
+  total: 144
+  result: 1
+
+- cut_lead_zero:
+  button: Cut
+  init: 4
+  total: 4058
+  result: 58
